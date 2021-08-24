@@ -1,4 +1,13 @@
-微信公众号JSAPI授权配置前端授权封装：前端开发时，确认以下几点内容：前端在使用前，应该确定服务端已经配置好公众号，并写好授权模块接口。授权接口能调通，正常返回appId、timestamp、nonceStr、signature。页面需要用微信打开或是微信开发都工具打开页面需要跑在公众号配置的安全域名下方能使用API。注：每次URL变化时，需要重新调用授权接口。（同一个url仅需调用一次，对于变化url的SPA的web app可在每次url变化时进行调用,目前Android微信客户端不支持pushState的H5新特性，所以使用pushState来实现web app的页面会导致签名失败，此问题会在Android6.2中修复）import request from "@/utils/request";
+授权封装：
+前端开发时，确认以下几点内容：
+前端在使用前，应该确定服务端已经配置好公众号，并写好授权模块接口。
+授权接口能调通，正常返回appId、timestamp、nonceStr、signature。
+页面需要用微信打开或是微信开发都工具打开
+页面需要跑在公众号配置的安全域名下方能使用API。
+
+注：每次URL变化时，需要重新调用授权接口。（同一个url仅需调用一次，对于变化url的SPA的web app可在每次url变化时进行调用,目前Android微信客户端不支持pushState的H5新特性，所以使用pushState来实现web app的页面会导致签名失败，此问题会在Android6.2中修复）
+
+import request from "@/utils/request";
 import wx from "weixin-js-sdk";
 
 //此接口这服务端接口，返回API所需的授权参数
@@ -48,7 +57,11 @@ export function readyWxFun(jsApiList, fun) {
             })
             .finally(() => { });
     });
-}API使用示例以分享为例，授权后，其它的使用同分享一样，看官方API调用即可。import wx from "weixin-js-sdk";
+}
+
+API使用示例以分享为例，授权后，其它的使用同分享一样，看官方API调用即可。
+
+import wx from "weixin-js-sdk";
 import { readyWxFun ,getUserInfo} from "@utils/weixin";
 
 export default {
@@ -99,7 +112,22 @@ export default {
     },
   },
 };
-服务端在开发前，请先拿到公众号相关账号，进行配置，具体配置方法在下方“公众号配置”中会讲到。代码示例为node.js。安全域名token验证开发者在公众号提交“接口配置信息”时，微信服务器将发送GET请求到填写的服务器地址URL上，GET请求携带参数如下表所示：参数描述signature微信加密签名，signature结合了开发者填写的token参数和请求中的timestamp参数、nonce参数。timestamp时间戳nonce随机数echostr随机字符串开发者通过检验signature对请求进行校验（下面有校验方式）。若确认此次GET请求来自微信服务器，请原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败。var crypto = require("crypto");
+服务端
+
+在开发前，请先拿到公众号相关账号，进行配置，具体配置方法在下方“公众号配置”中会讲到。代码示例为node.js。
+
+安全域名token验证
+开发者在公众号提交“接口配置信息”时，微信服务器将发送GET请求到填写的服务器地址URL上，GET请求携带参数如下表所示：
+
+参数描述
+signature微信加密签名，signature结合了开发者填写的token参数和请求中的timestamp参数、nonce参数。
+timestamp时间戳
+nonce随机数
+echostr随机字符串
+
+开发者通过检验signature对请求进行校验（下面有校验方式）。若确认此次GET请求来自微信服务器，请原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败。
+
+var crypto = require("crypto");
 // 加密方法
 function sha1(str) {
   var md5sum = crypto.createHash("sha1");
@@ -133,6 +161,8 @@ function validateToken(req) {
 }
 // 导出验证 Tonken 的发放
 module.exports = validateToken;
+
+
 const validateToken = require("./validateToken");
 // get请求验证tonken有效性
 app.get("/", (req, res) => {
@@ -140,9 +170,41 @@ app.get("/", (req, res) => {
         res.send(t);
     });
 });
-生成签名需要以下步骤：1、获取access_tokenaccess_token是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用access_token。开发者需要进行妥善保存。access_token的存储至少要保留512个字符空间。access_token的有效期目前为2个小时，需定时刷新，重复获取将导致上次获取的access_token失效。接口调用请求说明https请求方式: GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET参数说明参数是否必须说明grant_type是获取access_token填写client_credentialappid是第三方用户唯一凭证secret是第三方用户唯一凭证密钥，即appsecret返回说明正常情况下，微信会返回下述JSON数据包给公众号：{"access_token":"ACCESS_TOKEN","expires_in":7200} 2、获取jsapi_ticket用第一步拿到的access_token 采用http GET方式请求获得jsapi_ticket（有效期7200秒，开发者必须在自己的服务全局缓存jsapi_ticket）：https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi成功返回如下
+
+
+生成签名需要以下步骤：
+
+1、获取access_tokenaccess_token是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用access_token。开发者需要进行妥善保存。access_token的存储至少要保留512个字符空间。access_token的有效期目前为2个小时，需定时刷新，重复获取将导致上次获取的access_token失效。
+
+接口调用请求说明
+https请求方式: GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
+
+参数说明
+参数        是否必须   说明
+grant_type 是        获取access_token填写client_credential
+appid      是        第三方用户唯一凭证
+secret     是        第三方用户唯一凭证密钥，即appsecret
+
+返回说明
+
+正常情况下，微信会返回下述JSON数据包给公众号：
+{"access_token":"ACCESS_TOKEN","expires_in":7200} 
+
+2、获取jsapi_ticket
+
+用第一步拿到的access_token 采用http GET方式请求获得jsapi_ticket（有效期7200秒，开发者必须在自己的服务全局缓存jsapi_ticket）：https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi
+
+成功返回如下
 JSON：{   "errcode":0,   "errmsg":"ok",   "ticket":"bxLdikRXVbTPdHSM05e5u5sUoXNKd8-41ZO3MhKoyN5OfkWITDGgnr2fwJ0m9E8NYzWKVZvdVtaUgWvsdshFKA",   "expires_in":7200 } 
-获得jsapi_ticket之后，就可以生成JS-SDK权限验证的签名了。3、生成签名签名生成规则如下：参与签名的字段包括noncestr（随机字符串）, 有效的jsapi_ticket, timestamp（时间戳）, url（当前网页的URL，不包含#及其后面部分） 。对所有待签名参数按照字段名的ASCII 码从小到大排序（字典序）后，使用URL键值对的格式（即key1=value1&key2=value2…）拼接成字符串string1。这里需要注意的是所有参数名均为小写字符。对string1作sha1加密，字段名和字段值都采用原始值，不进行URL 转义。如下所示：
+
+获得jsapi_ticket之后，就可以生成JS-SDK权限验证的签名了。
+
+3、生成签名签名
+
+生成规则如下：
+
+参与签名的字段包括noncestr（随机字符串）, 有效的jsapi_ticket, timestamp（时间戳）, url（当前网页的URL，不包含#及其后面部分） 。对所有待签名参数按照字段名的ASCII 码从小到大排序（字典序）后，使用URL键值对的格式（即key1=value1&key2=value2…）拼接成字符串string1。这里需要注意的是所有参数名均为小写字符。对string1作sha1加密，字段名和字段值都采用原始值，不进行URL 转义。如下所示：
+
 function getSignature(url) {
     const str = 'jsapi_ticket=' + jsapi_ticket + '&noncestr=' + NONCESTR + '&timestamp=' + timestamp + '&url=' + url;
     const sha1 = crypto.createHash('sha1');
@@ -259,10 +321,25 @@ app.get('/wxconfig', function (req, res) {
     //     });
     // }
 });
-公众号配置此处以测试号为列，测试号信息中的appID及appsecret为服务端接口中，获取acces_token中使用到的参数。
-1、接口配置信息此处配置的是服务端的URL。配置前需要先将服务端“安全域名token验证”接口写好并发布，否则会配置失败。原因如下：安全域名token验证开发者通过检验signature对请求进行校验。若确认此次GET请求来自微信服务器，请原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败。注：仅支持80（http）和443（https）两个端口2、JS接口安全域名设置JS接口安全域后，通过关注该测试号，开发者即可在该域名下调用微信开放的JS接口。即：访问前端页面所在的域名，只有配置了此域名，才有权限调用JSAPI.
-附：ngrock及本地调试心得接口配置中的服务端域名和JS安全域名不能是本地IP,在开发时，需要映射成公网环境才能与微信服务器发生数据交互。
+
+公众号配置
+
+此处以测试号为列，测试号信息中的appID及appsecret为服务端接口中，获取acces_token中使用到的参数。
+
+1、接口配置信息此处配置的是服务端的URL。配置前需要先将服务端“安全域名token验证”接口写好并发布，否则会配置失败。原因如下：
+安全域名token验证
+
+开发者通过检验signature对请求进行校验。若确认此次GET请求来自微信服务器，请原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败。
+注：仅支持80（http）和443（https）两个端口
+
+2、JS接口安全域名设置JS接口安全域后，通过关注该测试号，开发者即可在该域名下调用微信开放的JS接口。即：访问前端页面所在的域名，只有配置了此域名，才有权限调用JSAPI.
+
+附：ngrock及本地调试心得
+
+接口配置中的服务端域名和JS安全域名不能是本地IP,在开发时，需要映射成公网环境才能与微信服务器发生数据交互。
+
 以下介绍一款免费的域名映射工具 ngrock.操作步骤如下：
+
 1.下载客户端https://ngrok.com/
 2.解压出应用
 3.在应用所在的文件夹，打开命令行:   ./ngrok http localhost:80
