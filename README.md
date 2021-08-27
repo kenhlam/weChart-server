@@ -7,7 +7,8 @@
 
 注：每次URL变化时，需要重新调用授权接口。（同一个url仅需调用一次，对于变化url的SPA的web app可在每次url变化时进行调用,目前Android微信客户端不支持pushState的H5新特性，所以使用pushState来实现web app的页面会导致签名失败，此问题会在Android6.2中修复）
 
-<h1>
+```
+import request from "@/utils/request"
 import request from "@/utils/request";
 import wx from "weixin-js-sdk";
 
@@ -59,7 +60,7 @@ export function readyWxFun(jsApiList, fun) {
             .finally(() => { });
     });
 }
-</h1>
+```
 
 API使用示例以分享为例，授权后，其它的使用同分享一样，看官方API调用即可。
 
@@ -114,8 +115,8 @@ export default {
       );
     },
   },
-};
-</h1>
+};`
+
 
 #  服务端
 
