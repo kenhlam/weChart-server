@@ -64,7 +64,7 @@ export function readyWxFun(jsApiList, fun) {
 
 API使用示例以分享为例，授权后，其它的使用同分享一样，看官方API调用即可。
 
-<h1>
+```
 import wx from "weixin-js-sdk";
 import { readyWxFun ,getUserInfo} from "@utils/weixin";
 
@@ -115,9 +115,9 @@ export default {
       );
     },
   },
-};`
+};
 
-
+```
 #  服务端
 
 ## 在开发前，请先拿到公众号相关账号，进行配置，具体配置方法在下方“公众号配置”中会讲到。代码示例为node.js。
@@ -133,7 +133,7 @@ echostr随机字符串
 
 开发者通过检验signature对请求进行校验（下面有校验方式）。若确认此次GET请求来自微信服务器，请原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败。
 
-<h1>
+```
 
 var crypto = require("crypto");
 // 加密方法
@@ -179,7 +179,7 @@ app.get("/weixin_obtain", (req, res) => {
     });
 });
 
-<h1>
+```
 
 ## 生成签名需要以下步骤：
 
@@ -205,10 +205,9 @@ secret     是        第三方用户唯一凭证密钥，即appsecret
 
 成功返回如下
 
-<h1>
-
+```
 JSON：{   "errcode":0,   "errmsg":"ok",   "ticket":"bxLdikRXVbTPdHSM05e5u5sUoXNKd8-41ZO3MhKoyN5OfkWITDGgnr2fwJ0m9E8NYzWKVZvdVtaUgWvsdshFKA",   "expires_in":7200 } 
-<h1>
+```
 
 获得jsapi_ticket之后，就可以生成JS-SDK权限验证的签名了。
 
@@ -218,7 +217,7 @@ JSON：{   "errcode":0,   "errmsg":"ok",   "ticket":"bxLdikRXVbTPdHSM05e5u5sUoXN
 
 参与签名的字段包括noncestr（随机字符串）, 有效的jsapi_ticket, timestamp（时间戳）, url（当前网页的URL，不包含#及其后面部分） 。对所有待签名参数按照字段名的ASCII 码从小到大排序（字典序）后，使用URL键值对的格式（即key1=value1&key2=value2…）拼接成字符串string1。这里需要注意的是所有参数名均为小写字符。对string1作sha1加密，字段名和字段值都采用原始值，不进行URL 转义。如下所示：
 
-<h1>
+```
 
 function getSignature(url) {
     const str = 'jsapi_ticket=' + jsapi_ticket + '&noncestr=' + NONCESTR + '&timestamp=' + timestamp + '&url=' + url;
@@ -337,7 +336,7 @@ app.get('/wxconfig', function (req, res) {
     // }
 });
 
-<h1>
+```
 
 ## 公众号配置
 
